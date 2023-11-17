@@ -56,6 +56,11 @@ function New-VSphereVMs-From-Template {
         $temp = Get-Template $Template
         $vmh = Get-VMHost $VMHost
 
+        If($NumOfVMs -lt 1){
+            Write-Error "Number of VMs must be greater than 0"
+            Break
+        }
+
         If($temp.ExtensionData.Config.Hardware.MemoryMB*$NumOfVMs -gt $vmh.MemoryTotalMB){
             Write-Error "Not enough memory on $vmh to create $NumOfVMs VMs"
             Break
