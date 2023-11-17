@@ -8,12 +8,21 @@ function Mount-ISO-File {
         [string]$ISODestinationPath
     )
     try{
+        If(!([System.IO.File]::Exists($ISOLocalPath))){
+            Write-Error "File $ISOLocalPath does not exist"
+            Break
+        }
+        If([IO.Path]::GetExtension($ISOLocalPath) -ne ".iso"){
+            Write-Error "File $ISOLocalPath is not an ISO file"
+            Break
+        }
         Copy-DataStoreItem $ISOLocalPath -Destination $ISODestinationPath
         $ISO = Get-Item $ISODestinationPath
         $filePathString = $ISOLocalPath + $ISODestinationPath.Split("\")[-1]
         $file = Get-Item $filePathString
         $ISOfile = join-path $ISO.DataStoreFullPath $file.name
         Get-CDDrive -VM $Name | Set-CDDrive -ISOPath $ISOfile -StartConnected $True -Confirm $False
+        
     }catch{
         Write-Host "An error occurred:"
         Write-Host $_
