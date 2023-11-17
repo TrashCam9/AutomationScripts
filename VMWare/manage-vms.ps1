@@ -1,41 +1,23 @@
-function New-VSphereTemplate {
+function Mount-ISO-File {
     param(
         [Parameter(Mandatory=$true)]
         [string]$Name,
-        [Parameter(Mandatory=$true)]
-        [string]$Datastore,
-        [Parameter(Mandatory=$true)]
-        [Decimal]$DiskGB,
-        [Parameter(Mandatory=$true)]
-        [string]$DiskStorageFormat,
-        [Parameter(Mandatory=$true)]
-        [Decimal]$MemoryGB,
-        [Parameter(Mandatory=$true)]
-        [int]$NumCPU,
-        [Parameter(Mandatory=$true)]
-        [string]$GuestId,
-        [Parameter(Mandatory=$true)]
-        [string]$VMHost,
         [Parameter(Mandatory=$false)]
-        [string]$ISOPath,
+        [string]$ISOLocalPath,
         [Parameter(Mandatory=$false)]
         [string]$ISODestinationPath
     )
     try{
-        New-VM -Name $Name -VMHost $VMHost -Datastore $Datastore -DiskGB $DiskGB -DiskStorageFormat $DiskStorageFormat -MemoryGB $MemoryGB -NumCPU $NumCPU -GuestId $GuestId -CD
-        Copy-DataStoreItem $ISOPath -Destination $ISODestinationPath
+        Copy-DataStoreItem $ISOLocalPath -Destination $ISODestinationPath
         $ISO = Get-Item $ISODestinationPath
-        $filePathString = $ISOPath + $ISODestinationPath.Split("\")[-1]
+        $filePathString = $ISOLocalPath + $ISODestinationPath.Split("\")[-1]
         $file = Get-Item $filePathString
         $ISOfile = join-path $ISO.DataStoreFullPath $file.name
         Get-CDDrive -VM $Name | Set-CDDrive -ISOPath $ISOfile -StartConnected $True -Confirm $False
-        #TODO: BUSCA SI SE PUEDE AUTOMATIZAR LA INSTALACION DEL OS
     }catch{
         Write-Host "An error occurred:"
         Write-Host $_
     }
-    
-
 }
 
 function New-VSphereVMs-From-Template {
