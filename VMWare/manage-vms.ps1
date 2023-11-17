@@ -18,8 +18,7 @@ function Mount-ISO-File {
         }
         Copy-DataStoreItem $ISOLocalPath -Destination $ISODestinationPath
         $ISO = Get-Item $ISODestinationPath
-        $filePathString = $ISOLocalPath + $ISODestinationPath.Split("\")[-1]
-        $file = Get-Item $filePathString
+        $file = Get-Item $ISOLocalPath
         $ISOfile = join-path $ISO.DataStoreFullPath $file.name
         Get-CDDrive -VM $Name | Set-CDDrive -ISOPath $ISOfile -StartConnected $True -Confirm $False
         
