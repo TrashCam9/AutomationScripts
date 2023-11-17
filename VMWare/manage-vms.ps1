@@ -20,7 +20,8 @@ function Mount-ISO-File {
         $ISO = Get-Item $ISODestinationPath
         $file = Get-Item $ISOLocalPath
         $ISOfile = join-path $ISO.DataStoreFullPath $file.name
-        Get-CDDrive -VM $Name | Set-CDDrive -ISOPath $ISOfile -StartConnected $True -Confirm $False
+        $ISOfile
+        New-CDDrive -VM $Name -ISOPath $ISOfile -StartConnected $True -Confirm $False
         
     }catch{
         Write-Host "An error occurred:"
