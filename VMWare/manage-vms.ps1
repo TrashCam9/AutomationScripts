@@ -28,6 +28,14 @@ function Mount-ISO-File {
     }
 }
 
+function Move-VM-To-AVS {
+    #TODO: Completar función
+}
+
+function Move-VM-To-OnPrem {
+    #TODO: Completar función
+}
+
 function Remove-VSphereVMs-From-Template{
     param(
         [Parameter(Mandatory=$true)]
