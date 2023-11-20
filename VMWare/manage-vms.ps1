@@ -37,12 +37,17 @@ function Remove-VSphereVMs-From-Template{
     )
     try{
         $deployementEvents = Get-VM | Get-VIEvent | Where-Object -FilterScript {($_ -is [vmware.vim.VmDeployedEvent]) -and ($_.SrcTemplate.Name -eq $TemplateName) -and ($_.Host.Name -eq $VMHost)}
-        for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
-            $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
-            if ($vm.PowerState -eq "PoweredOn"){
-                $vm | Stop-VM -Confirm:$false
+        If ($deployementEvents.Count -eq 0){
+            Write-Host "No VMs found with template name $TemplateName on host $VMHost"
+        }Else{
+            for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
+                $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
+                if ($vm.PowerState -eq "PoweredOn"){
+                    $vm | Stop-VM -Confirm:$false
+                }
+                $vm | Remove-VM -DeletePermanently -Confirm:$false
             }
-            $vm | Remove-VM -DeletePermanently -Confirm:$false
+            Write-Host "Removed $($deployementEvents.Count) VMs with template name $TemplateName on host $VMHost"
         }
     }catch{
         Write-Host "An error occurred:"
