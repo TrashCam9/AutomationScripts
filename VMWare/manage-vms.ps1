@@ -28,6 +28,29 @@ function Mount-ISO-File {
     }
 }
 
+function Remove-VSphereVMs-From-Template{
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $TemplateName, 
+        [Parameter(Mandatory=$true)]
+        [string] $VMHost
+    )
+    try{
+        $deployementEvents = Get-VM | Get-VIEvent | Where-Object -FilterScript {($_ -is [vmware.vim.VmDeployedEvent]) -and ($_.SrcTemplate.Name -eq $TemplateName)}
+        for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
+            $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
+            if ($vm.PowerState -eq "PoweredOn"){
+                $vm | Stop-VM -Confirm:$false
+            }
+            $vm | Remove-VM -DeletePermanently -Confirm:$false
+        }
+    }catch{
+        Write-Host "An error occurred:"
+        Write-Host $_
+    }
+
+}
+
 function New-VSphereVMs-From-Template {
     param(
         [Parameter(Mandatory=$true)]
