@@ -44,13 +44,21 @@ function Start-VMs-From-Template {
         [string] $VMHost
     )
     try{
-
+        $deployementEvents = Get-Deployement-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
+        for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
+            $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
+            if ($vm.PowerState -eq "PoweredOff"){
+                $vm | Start-VM -Confirm:$false
+            }
+        }
+        Write-Host "Turned on $($deployementEvents.Count) VMs with template name $TemplateName on host $VMHost"
     }catch{
-
+        Write-Host "An error occurred:"
+        Write-Host $_
     }
 }
 
-function Get-Deployed-Events-From-Template{
+function Get-Deployement-Events-From-Template{
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName, 
@@ -58,6 +66,9 @@ function Get-Deployed-Events-From-Template{
         [string] $VMHost
     )
     $deployementEvents = Get-VM | Get-VIEvent | Where-Object -FilterScript {($_ -is [vmware.vim.VmDeployedEvent]) -and ($_.SrcTemplate.Name -eq $TemplateName) -and ($_.Host.Name -eq $VMHost)}
+    If ($deployementEvents.Count -eq 0){
+        Write-Host "No VMs found with template name $TemplateName on host $VMHost"
+    }
     return $deployementEvents
 }
 function Remove-VSphereVMs-From-Template{
@@ -68,19 +79,16 @@ function Remove-VSphereVMs-From-Template{
         [string] $VMHost
     )
     try{
-        $deployementEvents = Get-Deployed-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
-        If ($deployementEvents.Count -eq 0){
-            Write-Host "No VMs found with template name $TemplateName on host $VMHost"
-        }Else{
-            for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
-                $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
-                if ($vm.PowerState -eq "PoweredOn"){
-                    $vm | Stop-VM -Confirm:$false
-                }
-                $vm | Remove-VM -DeletePermanently -Confirm:$false
+        $deployementEvents = Get-Deployement-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
+        for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
+            $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
+            if ($vm.PowerState -eq "PoweredOn"){
+                $vm | Stop-VM -Confirm:$false
             }
-            Write-Host "Removed $($deployementEvents.Count) VMs with template name $TemplateName on host $VMHost"
+            $vm | Remove-VM -DeletePermanently -Confirm:$false
         }
+        Write-Host "Removed $($deployementEvents.Count) VMs with template name $TemplateName on host $VMHost"
+    
     }catch{
         Write-Host "An error occurred:"
         Write-Host $_
