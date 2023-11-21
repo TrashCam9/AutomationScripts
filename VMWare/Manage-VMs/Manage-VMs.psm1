@@ -58,6 +58,40 @@ function Start-VMs-From-Template {
     }
 }
 
+function Stop-VMs-From-Template {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $TemplateName,
+        [Parameter(Mandatory=$true)]
+        [string] $VMHost
+    )
+    try{
+        $deployementEvents = Get-Deployement-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
+        for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
+            Stop-VM-With-Name -Name $deployementEvents[$i].Vm.Name
+        }
+        Write-Host "Turned off $($deployementEvents.Count) VMs with template name $TemplateName on host $VMHost"
+    }catch{
+        Write-Host "An error occurred:"
+        Write-Host $_
+    }
+}
+
+function Stop-VM-With-Name{
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $Name
+    )
+    $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
+    if ($null -eq $vm){
+        Write-Host "No VM found with name $Name"
+        Break
+    }
+    if ($vm.PowerState -eq "PoweredOn"){
+        $vm | Stop-VM -Confirm:$false
+    }
+}
+
 function Get-Deployement-Events-From-Template{
     param(
         [Parameter(Mandatory=$true)]
@@ -81,10 +115,7 @@ function Remove-VSphereVMs-From-Template{
     try{
         $deployementEvents = Get-Deployement-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
         for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
-            $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
-            if ($vm.PowerState -eq "PoweredOn"){
-                $vm | Stop-VM -Confirm:$false
-            }
+            Stop-VM-With-Name -Name $deployementEvents[$i].Vm.Name
             $vm | Remove-VM -DeletePermanently -Confirm:$false
         }
         Write-Host "Removed $($deployementEvents.Count) VMs with template name $TemplateName on host $VMHost"
