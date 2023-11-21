@@ -36,6 +36,30 @@ function Move-VM-To-OnPrem {
     #TODO: Completar función
 }
 
+function Start-VMs-From-Template {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $TemplateName,
+        [Parameter(Mandatory=$true)]
+        [string] $VMHost
+    )
+    try{
+
+    }catch{
+
+    }
+}
+
+function Get-Deployed-Events-From-Template{
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $TemplateName, 
+        [Parameter(Mandatory=$true)]
+        [string] $VMHost
+    )
+    $deployementEvents = Get-VM | Get-VIEvent | Where-Object -FilterScript {($_ -is [vmware.vim.VmDeployedEvent]) -and ($_.SrcTemplate.Name -eq $TemplateName) -and ($_.Host.Name -eq $VMHost)}
+    return $deployementEvents
+}
 function Remove-VSphereVMs-From-Template{
     param(
         [Parameter(Mandatory=$true)]
@@ -44,7 +68,7 @@ function Remove-VSphereVMs-From-Template{
         [string] $VMHost
     )
     try{
-        $deployementEvents = Get-VM | Get-VIEvent | Where-Object -FilterScript {($_ -is [vmware.vim.VmDeployedEvent]) -and ($_.SrcTemplate.Name -eq $TemplateName) -and ($_.Host.Name -eq $VMHost)}
+        $deployementEvents = Get-Deployed-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
         If ($deployementEvents.Count -eq 0){
             Write-Host "No VMs found with template name $TemplateName on host $VMHost"
         }Else{
