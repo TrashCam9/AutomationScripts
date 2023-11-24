@@ -1,4 +1,4 @@
-function Mount-ISO-File {
+function Mount-ISOFile {
     param(
         [Parameter(Mandatory=$true)]
         [string]$Name,
@@ -28,15 +28,15 @@ function Mount-ISO-File {
     }
 }
 
-function Move-VM-To-AVS {
+function Move-VMToAVS {
     #TODO: Completar función
 }
 
-function Move-VM-To-OnPrem {
+function Move-VMToOnPrem {
     #TODO: Completar función
 }
 
-function Start-VMs-From-Template {
+function Start-VMsFromTemplate {
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName,
@@ -58,7 +58,7 @@ function Start-VMs-From-Template {
     }
 }
 
-function Stop-VMs-From-Template {
+function Stop-VMsFromTemplate {
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName,
@@ -77,7 +77,7 @@ function Stop-VMs-From-Template {
     }
 }
 
-function Stop-VM-With-Name{
+function Stop-VMWithName{
     param(
         [Parameter(Mandatory=$true)]
         [string] $Name
@@ -92,7 +92,7 @@ function Stop-VM-With-Name{
     }
 }
 
-function Get-Deployement-Events-From-Template{
+function Get-DeployementEventsFromTemplate{
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName, 
@@ -105,7 +105,7 @@ function Get-Deployement-Events-From-Template{
     }
     return $deployementEvents
 }
-function Remove-VSphereVMs-From-Template{
+function Remove-VSphereVMsFromTemplate{
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName, 
@@ -127,7 +127,7 @@ function Remove-VSphereVMs-From-Template{
 
 }
 
-function New-VSphereVMs-From-Template {
+function New-VSphereVMsFromTemplate {
     param(
         [Parameter(Mandatory=$true)]
         [string]$Name,
