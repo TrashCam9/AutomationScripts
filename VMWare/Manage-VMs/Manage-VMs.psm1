@@ -28,8 +28,49 @@ function Mount-ISOFile {
     }
 }
 
-function Move-VMToAVS {
-    #TODO: Completar función
+function Set-HCXVMsMigration {
+    param(
+        [Parameter(Mandatory=$false)]
+        [string]$VMName,
+        [Parameter(Mandatory=$false)]
+        [array]$VMNames,
+        [Parameter(Mandatory=$true)]
+        [datetime]$StartTime,
+        [Parameter(Mandatory=$true)]
+        [datetime]$EndTime,
+        [Parameter(Mandatory=$true)]
+        [string]$HCXServer,
+        [Parameter(Mandatory=$true)]
+        [string]$SourceServer,
+        [Parameter(Mandatory=$true)]
+        [string]$DestinationServer,
+        [Parameter(Mandatory=$true)]
+        [string]$DestinationFolder,
+        [Parameter(Mandatory=$true)]
+        [string]$DestinationDatastore,
+        [Parameter(Mandatory=$true)]
+        [string]$SourceNetwork,
+        [Parameter(Mandatory=$true)]
+        [string]$DestinationNetwork,   
+        [Parameter(Mandatory=$true)]
+        [string]$DestinationResourcePool,
+        [Parameter(Mandatory=$true)]
+        [string]$MigrationType,
+        [Parameter(Mandatory=$true)]
+        [string]$DiskProvisionType,
+        [Parameter(Mandatory=$true)]
+        [bool]$UpgradeVMTools,
+        [Parameter(Mandatory=$true)]
+        [bool]$RemoveISOs,
+        [Parameter(Mandatory=$true)]
+        [bool]$ForcePowerOffVM,
+        [Parameter(Mandatory=$true)]
+        [bool]$RetainMac,
+        [Parameter(Mandatory=$true)]
+        [bool]$UpgradeHardware,
+        [Parameter(Mandatory=$true)]
+        [bool]$RemoveSnapshots
+    )
 }
 
 function Move-VMToOnPrem {
