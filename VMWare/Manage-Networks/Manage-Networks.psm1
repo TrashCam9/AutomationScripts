@@ -13,4 +13,4 @@ function New-VirtualPortGroupWithVS {
     )
     $vs = New-VirtualSwitch -Name $VirtualSwitchName -VMHost $VMHost -NumPorts $NumPorts -Mtu $Mtu
     New-VirtualPortGroup -VirtualSwitch $vs -Name $PortGroupName
-}j
+}
