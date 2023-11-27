@@ -93,7 +93,7 @@ function Start-VMsFromTemplate {
         [string] $VMHost
     )
     try{
-        $deployementEvents = Get-Deployement-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
+        $deployementEvents = Get-DeployementEventsFromTemplate -TemplateName $TemplateName -VMHost $VMHost
         for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
             $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
             if ($vm.PowerState -eq "PoweredOff"){
@@ -115,7 +115,7 @@ function Stop-VMsFromTemplate {
         [string] $VMHost
     )
     try{
-        $deployementEvents = Get-Deployement-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
+        $deployementEvents = Get-DeployementEventsFromTemplate -TemplateName $TemplateName -VMHost $VMHost
         for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
             Stop-VM-With-Name -Name $deployementEvents[$i].Vm.Name
         }
@@ -162,7 +162,7 @@ function Remove-VSphereVMsFromTemplate{
         [string] $VMHost
     )
     try{
-        $deployementEvents = Get-Deployement-Events-From-Template -TemplateName $TemplateName -VMHost $VMHost
+        $deployementEvents = Get-DeployementEventsFromTemplate -TemplateName $TemplateName -VMHost $VMHost
         for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
             Stop-VM-With-Name -Name $deployementEvents[$i].Vm.Name
             $vm | Remove-VM -DeletePermanently -Confirm:$false
