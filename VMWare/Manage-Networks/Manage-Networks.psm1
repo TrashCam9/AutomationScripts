@@ -11,6 +11,13 @@ function New-VirtualPortGroupWithVS {
         [Parameter(Mandatory=$true)]
         [string] $PortGroupName
     )
-    $vs = New-VirtualSwitch -Name $VirtualSwitchName -VMHost $VMHost -NumPorts $NumPorts -Mtu $Mtu
-    New-VirtualPortGroup -VirtualSwitch $vs -Name $PortGroupName
+    try{
+        $vs = New-VirtualSwitch -Name $VirtualSwitchName -VMHost $VMHost -NumPorts $NumPorts -Mtu $Mtu
+        New-VirtualPortGroup -VirtualSwitch $vs -Name $PortGroupName
+    }catch{
+        Write-Host "An error occurred:"
+        Write-Host $_
+    }
+    
 }
+
