@@ -131,7 +131,7 @@ function Stop-VMWithName{
         [Parameter(Mandatory=$true)]
         [string] $Name
     )
-    $vm = Get-VM -Name $deployementEvents[$i].Vm.Name
+    $vm = Get-VM -Name $Name
     if ($null -eq $vm){
         Write-Host "No VM found with name $Name"
         Break
