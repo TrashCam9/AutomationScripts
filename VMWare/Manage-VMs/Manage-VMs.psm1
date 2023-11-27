@@ -28,54 +28,62 @@ function Mount-ISOFile {
     }
 }
 
-function Set-HCXVMsMigration {
+function Move-VMs {
     param(
-        [Parameter(Mandatory=$false)]
-        [string]$VMName,
-        [Parameter(Mandatory=$false)]
-        [array]$VMNames,
         [Parameter(Mandatory=$true)]
-        [datetime]$StartTime,
+        [array] $VMs,
         [Parameter(Mandatory=$true)]
-        [datetime]$EndTime,
+        [string] $MigrationType,
         [Parameter(Mandatory=$true)]
-        [string]$HCXServer,
+        [string] $TargetNetwork,
         [Parameter(Mandatory=$true)]
-        [string]$SourceServer,
+        [string] $TargetDatastore,
         [Parameter(Mandatory=$true)]
-        [string]$DestinationServer,
+        [string] $TargetResourcePool,
         [Parameter(Mandatory=$true)]
-        [string]$DestinationFolder,
+        [string] $TargetFolder,
         [Parameter(Mandatory=$true)]
-        [string]$DestinationDatastore,
-        [Parameter(Mandatory=$true)]
-        [string]$SourceNetwork,
-        [Parameter(Mandatory=$true)]
-        [string]$DestinationNetwork,   
-        [Parameter(Mandatory=$true)]
-        [string]$DestinationResourcePool,
-        [Parameter(Mandatory=$true)]
-        [string]$MigrationType,
-        [Parameter(Mandatory=$true)]
-        [string]$DiskProvisionType,
-        [Parameter(Mandatory=$true)]
-        [bool]$UpgradeVMTools,
-        [Parameter(Mandatory=$true)]
-        [bool]$RemoveISOs,
-        [Parameter(Mandatory=$true)]
-        [bool]$ForcePowerOffVM,
-        [Parameter(Mandatory=$true)]
-        [bool]$RetainMac,
-        [Parameter(Mandatory=$true)]
-        [bool]$UpgradeHardware,
-        [Parameter(Mandatory=$true)]
-        [bool]$RemoveSnapshots
+        [string] $MobilityGroupName
     )
+    $targetSite = Get-HCXSite -Destination
+    $sourceSite = Get-HCXSite -Source
+    $targetDatastore = Get-HCXDatastore -Site $targetSite -Name $TargetDatastore
+    $targetContainer = Get-HCXContainer -Site $targetSite -Type "ResourcePool" -Name $TargetResourcePool
+    $targetFolder = Get-HCXContainer -Site $targetSite -Type Folder -Name $TargetFolder
+
+    $mobilityGroupConfig = New-HCXMobilityGroupConfiguration -SourceSite $sourceSite -DestinationSite $targetSite
+
+    $hcxMigrations = @()
+    foreach ($vm in $VMs) {
+    $hcxVm = Get-HCXVM -Name $vm
+
+    $sourceNetwork = $hcxVm.Network[0]
+    $targetNetwork = Get-HCXNetwork -Type NsxtSegment -Name $TargetNetwork -Site $targetSite
+    $networkMapping = New-HCXNetworkMapping -SourceNetwork $sourceNetwork -DestinationNetwork $targetNetwork
+
+    $hcxMigration = New-HCXMigration -VM $hcxVm `
+    -MigrationType $MigrationType `
+    -SourceSite $sourceSite `
+    -DestinationSite $targetSite `
+    -DiskProvisionType SameAsSource `
+    -RetainMac $true `
+    -TargetComputeContainer $targetContainer `
+    -TargetDatastore $targetDatastore `
+    -NetworkMapping $networkMapping `
+    -Folder $targetFolder `
+    -MobilityGroupMigration
+
+    $hcxMigrations += $hcxMigration
+    }
+
+    $mobilityGroup = New-HCXMobilityGroup -Name $MobilityGroupName -Migration $hcxMigrations -GroupConfiguration $mobilityGroupConfig
+
+    Test-HCXMobilityGroup -MobilityGroup $mobilityGroup
+
+    Start-HCXMobilityGroupMigration -MobilityGroup $mobilityGroup
+
 }
 
-function Move-VMToOnPrem {
-    #TODO: Completar función
-}
 
 function Start-VMsFromTemplate {
     param(
