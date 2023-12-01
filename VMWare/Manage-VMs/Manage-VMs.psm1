@@ -35,7 +35,7 @@ function Move-VMs {
         [Parameter(Mandatory=$true)]
         [string] $MigrationType,
         [Parameter(Mandatory=$true)]
-        [string] $TargetNetwork,
+        [string] $TargetNet,
         [Parameter(Mandatory=$true)]
         [string] $TargetDatastore,
         [Parameter(Mandatory=$true)]
@@ -45,35 +45,34 @@ function Move-VMs {
         [Parameter(Mandatory=$true)]
         [string] $MobilityGroupName
     )
+
     $targetSite = Get-HCXSite -Destination
     $sourceSite = Get-HCXSite -Source
-    $targetDatastore = Get-HCXDatastore -Site $targetSite -Name $TargetDatastore
+    $tgtDatastore = Get-HCXDatastore -Site $targetSite -Name $TargetDatastore
     $targetContainer = Get-HCXContainer -Site $targetSite -Type "ResourcePool" -Name $TargetResourcePool
-    $targetFolder = Get-HCXContainer -Site $targetSite -Type Folder -Name $TargetFolder
+    $tgtFolder = Get-HCXContainer -Site $targetSite -Type Folder -Name $TargetFolder
 
     $mobilityGroupConfig = New-HCXMobilityGroupConfiguration -SourceSite $sourceSite -DestinationSite $targetSite
 
     $hcxMigrations = @()
     foreach ($vm in $VMs) {
-    $hcxVm = Get-HCXVM -Name $vm
+        $hcxVm = Get-HCXVM -Name $vm
+        $srcNet = $hcxVm.Network[0]
+	    $tgtNetowrk = Get-HCXNetwork -Type NsxtSegment -Name $TargetNet -Site $TargetSite
+	    $networkMap = New-HCXNetworkMapping -SourceNetwork $srcNet -DestinationNetwork $tgtNetowrk
+        $hcxMigration = New-HCXMigration -VM $hcxVm `
+        -MigrationType $MigrationType `
+        -SourceSite $sourceSite `
+        -DestinationSite $targetSite `
+        -DiskProvisionType SameAsSource `
+        -RetainMac $true `
+        -TargetComputeContainer $targetContainer `
+        -TargetDatastore $tgtDatastore `
+        -NetworkMapping $networkMap `
+        -Folder $tgtFolder `
+        -MobilityGroupMigration
 
-    $sourceNetwork = $hcxVm.Network[0]
-    $targetNetwork = Get-HCXNetwork -Type NsxtSegment -Name $TargetNetwork -Site $targetSite
-    $networkMapping = New-HCXNetworkMapping -SourceNetwork $sourceNetwork -DestinationNetwork $targetNetwork
-
-    $hcxMigration = New-HCXMigration -VM $hcxVm `
-    -MigrationType $MigrationType `
-    -SourceSite $sourceSite `
-    -DestinationSite $targetSite `
-    -DiskProvisionType SameAsSource `
-    -RetainMac $true `
-    -TargetComputeContainer $targetContainer `
-    -TargetDatastore $targetDatastore `
-    -NetworkMapping $networkMapping `
-    -Folder $targetFolder `
-    -MobilityGroupMigration
-
-    $hcxMigrations += $hcxMigration
+        $hcxMigrations += $hcxMigration
     }
 
     $mobilityGroup = New-HCXMobilityGroup -Name $MobilityGroupName -Migration $hcxMigrations -GroupConfiguration $mobilityGroupConfig
@@ -81,7 +80,6 @@ function Move-VMs {
     Test-HCXMobilityGroup -MobilityGroup $mobilityGroup
 
     Start-HCXMobilityGroupMigration -MobilityGroup $mobilityGroup
-
 }
 
 
