@@ -1,4 +1,15 @@
 function Mount-ISOFile {
+    <#
+    .SYNOPSIS
+        Function to mount iso file to VM
+    .PARAMETER Name
+        Name of the VM
+    .PARAMETER ISOLocalPath
+        Local path of the ISO file
+    .PARAMETER ISODestinationPath
+        Destination path of the ISO file.
+        Hint: Use PSDrive vmstore:/ to get the path of the datastore
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [string]$Name,
@@ -29,6 +40,24 @@ function Mount-ISOFile {
 }
 
 function Move-VMs {
+    <#
+    .SYNOPSIS
+        Function migrate VMs to another host
+    .PARAMETER VMs
+        Array with the name of the VMs
+    .PARAMETER MigrationType
+        Name of the migration type
+    .PARAMETER TargetNet
+        Name of the target network
+    .PARAMETER TargetDatastore
+        Name of the target datastore
+    .PARAMETER TargetResourcePool
+        Name of the target resource pool
+    .PARAMETER TargetFolder
+        Name of the target folder
+    .PARAMETER MobilityGroupName
+        Name of the mobility group
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [array] $VMs,
@@ -84,6 +113,14 @@ function Move-VMs {
 
 
 function Start-VMsFromTemplate {
+    <#
+    .SYNOPSIS
+        Function to turn on VMs created from a template
+    .PARAMETER TemplateName
+        Name of the template
+    .PARAMETER VMHost
+        Name of the VMHost
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName,
@@ -106,6 +143,14 @@ function Start-VMsFromTemplate {
 }
 
 function Stop-VMsFromTemplate {
+    <#
+    .SYNOPSIS
+        Function to turn off VMs created from a template
+    .PARAMETER TemplateName
+        Name of the template
+    .PARAMETER VMHost
+        Name of the VMHost
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName,
@@ -125,6 +170,12 @@ function Stop-VMsFromTemplate {
 }
 
 function Stop-VMWithName{
+    <#
+    .SYNOPSIS
+        Function to stop a VM with a given name
+    .PARAMETER Name
+        Name of the VM
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [string] $Name
@@ -140,6 +191,14 @@ function Stop-VMWithName{
 }
 
 function Get-DeployementEventsFromTemplate{
+    <#
+    .SYNOPSIS
+        Function to get a list of deployement events from a template
+    .PARAMETER TemplateName
+        Name of the template
+    .PARAMETER VMHost
+        Name of the VMHost
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName, 
@@ -153,6 +212,14 @@ function Get-DeployementEventsFromTemplate{
     return $deployementEvents
 }
 function Remove-VSphereVMsFromTemplate{
+    <#
+    .SYNOPSIS
+        Function to delete VMs created from a template
+    .PARAMETER TemplateName
+        Name of the template
+    .PARAMETER VMHost
+        Name of the VMHost
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [string] $TemplateName, 
@@ -175,6 +242,20 @@ function Remove-VSphereVMsFromTemplate{
 }
 
 function New-VSphereVMsFromTemplate {
+    <#
+    .SYNOPSIS
+        Function to create VMs from a template
+    .PARAMETER Name
+        Name of the VM
+    .PARAMETER Template
+        Name of the template
+    .PARAMETER VMHost
+        Name of the VMHost
+    .PARAMETER NumOfVMs
+        Number of VMs to create
+    .PARAMETER PowerOn
+        Power on the VMs after creation
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [string]$Name,

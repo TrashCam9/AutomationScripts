@@ -1,4 +1,18 @@
 function New-VirtualPortGroupWithVS {
+    <#
+    .SYNOPSIS
+        Function to create a new virtual port group with a virtual switch
+    .PARAMETER VirtualSwitchName
+        Name of the VirtualSwitch
+    .PARAMETER VMHost
+        Name of the VMHost
+    .PARAMETER NumPorts
+        Number of ports
+    .PARAMETER Mtu
+        MTU
+    .PARAMETER PortGroupName
+        Name of the port group
+    #>
     param(
         [Parameter(Mandatory=$true)]
         [string] $VirtualSwitchName,
