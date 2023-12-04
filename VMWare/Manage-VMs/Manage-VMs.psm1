@@ -291,7 +291,7 @@ function New-VSphereVMsFromTemplate {
             Break
         }
 
-        For($i = 0; $i -le $NumOfVMs; $i++){
+        For($i = 0; $i -lt $NumOfVMs; $i++){
             $VMName = $Name + $i
             New-VM -Name $VMName -Template $temp -VMHost $vmh
 
