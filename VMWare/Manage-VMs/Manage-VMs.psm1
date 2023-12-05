@@ -160,7 +160,7 @@ function Stop-VMsFromTemplate {
     try{
         $deployementEvents = Get-DeployementEventsFromTemplate -TemplateName $TemplateName -VMHost $VMHost
         for ($i = 0; $i -lt $deployementEvents.Count; $i++) {
-            Stop-VM-With-Name -Name $deployementEvents[$i].Vm.Name
+            Stop-VMWithName -Name $deployementEvents[$i].Vm.Name
         }
         Write-Host "Turned off $($deployementEvents.Count) VMs with template name $TemplateName on host $VMHost"
     }catch{
